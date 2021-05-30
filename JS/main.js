@@ -340,8 +340,9 @@ function changeDate(evt) {
   // sChart = true;
   // $('.chartHeight').show();
   // $('#showChartBtn').text('Show Chart');
-  let currLes = $('#lessonSelection').val();
-  data.setDate(new Date(evt.options[evt.selectedIndex].text), currLes);
+  let lesHolder = $('#lessonSelection').val();
+  let groupHolder = $('#groupSelection').val();
+  data.setDate(new Date(evt.options[evt.selectedIndex].text), lesHolder, groupHolder);
 }
 
 //$('#lessonSelection').attr('disabled', true)
@@ -382,48 +383,51 @@ const data = new (class {
           new Date(value.HappendAt).getTime() + 8 * 3600000
         ))
     );
-
+	
     d.sort((a, b) => new Date(b.HappendAt) - new Date(a.HappendAt));
     let uniqueDates = [
       ...new Set(d.map(({ HappendAt }) => dt.dateToDateString(HappendAt)))
     ];
 	
-    //set lesson selector  
-	let uniqueLessons = [...new Set(d.map(
-		item => item.Title.includes('undefined') ? "No Lesson Assigned" : item.Title))];
-	let lesOptions = [];
-	for (var i=0;i<uniqueLessons.length;i++){
-		lesOptions.push('<option value="'+ uniqueLessons[i] + '">' + uniqueLessons[i] + '</option>');
+    //set lesson selector 	
+	if ('Title' in d[0]) {
+		let uniqueLessons = [...new Set(d.map(
+			item => item.Title.includes('undefined') ? "No Lesson Found" : item.Title))];
+		let lesOptions = [];
+		for (var i=0;i<uniqueLessons.length;i++){
+			lesOptions.push('<option value="'+ uniqueLessons[i] + '">' + uniqueLessons[i] + '</option>');
+		}
+		
+		let lesCollator = new Intl.Collator(undefined, {sensitivity: 'base'});
+		let currLesSelection = $('#lessonSelection').val();
+		$('#lessonSelection').html(lesOptions.sort(lesCollator.compare));
+		if(currLesSelection) {
+			$('#lessonSelection').val(currLesSelection);
+		}
+		else {
+			let firstLesOption = $('#lessonSelection option').map(function(){return $(this).val()})[0];
+			$('#lessonSelection').val(firstLesOption);
+		}
 	}
-	
-    let lesCollator = new Intl.Collator(undefined, {sensitivity: 'base'});
-	let currLesSelection = $('#lessonSelection').val();
-    $('#lessonSelection').html(lesOptions.sort(lesCollator.compare));
-	if(currLesSelection) {
-		$('#lessonSelection').val(currLesSelection);
-	}
-	else {
-		let firstLesOption = $('#lessonSelection option').map(function(){return $(this).val()})[0];
-		$('#lessonSelection').val(firstLesOption);
-	}
-
-     //set group selector  
-	let uniqueGroups = [...new Set(d.map(
-		item => item.Group.includes('undefined') ? "No Group Assigned" : item.Group))];
-	let groupOptions = [];
-	for (var i=0;i<uniqueGroups.length;i++){
-		groupOptions.push('<option value="'+ uniqueGroups[i] + '">' + uniqueGroups[i] + '</option>');
-	}
-	
-    let groupCollator = new Intl.Collator(undefined, {sensitivity: 'base'});
-	let currGrpSelection = $('#groupSelection').val();
-    $('#groupSelection').html(groupOptions.sort(groupCollator.compare));
-	if(currGrpSelection) {
-		$('#groupSelection').val(currGrpSelection);
-	}
-	else {
-		let firstGrpOption = $('#groupSelection option').map(function(){return $(this).val()})[0];
-		$('#groupSelection').val(firstGrpOption);
+	if ('Group' in d[0]) {
+		//set group selector  
+		let uniqueGroups = [...new Set(d.map(
+			item => item.Group.includes('undefined') ? "No Group Found" : item.Group))];
+		let groupOptions = [];
+		for (var i=0;i<uniqueGroups.length;i++){
+			groupOptions.push('<option value="'+ uniqueGroups[i] + '">' + uniqueGroups[i] + '</option>');
+		}
+		
+		let groupCollator = new Intl.Collator(undefined, {sensitivity: 'base'});
+		let currGrpSelection = $('#groupSelection').val();
+		$('#groupSelection').html(groupOptions.sort(groupCollator.compare));
+		if(currGrpSelection) {
+			$('#groupSelection').val(currGrpSelection);
+		}
+		else {
+			let firstGrpOption = $('#groupSelection option').map(function(){return $(this).val()})[0];
+			$('#groupSelection').val(firstGrpOption);
+		}
 	}
 	
     //set date selector
@@ -445,8 +449,12 @@ const data = new (class {
   //Activate when change date
   setDate(date, lesson, group) {
     this.dayData = this.arrayToDate(this.sortedData, date);
+	//console.log(this.dayData)
     this.dayData = this.arrayByLesson(this.dayData, lesson);
+	//console.log(this.dayData)
     this.dayData = this.arrayByGroup(this.dayData, group);
+	//console.log(group);
+	//console.log(this.dayData)
    
     //If selected date doesn't have data, only applicable for today's date
     if (this.dayData.length == 0) {
@@ -735,11 +743,11 @@ const data = new (class {
     return newarray
   }
   arrayByLesson(a, name){
-    if (name!='No Lesson Assigned') return a.filter(x=> x.Title == name);
+    if (name!='No Lesson Found') return a.filter(x=> x.Title == name);
     else return a.filter(x=> x.Title == undefined)
   }
   arrayByGroup(a, name){
-    if (name!='No Group Assigned') return a.filter(x=> x.Group == name);
+    if (name!='No Group Found') return a.filter(x=> x.Group == name);
     else return a.filter(x=> x.Group == undefined)
   }
   arraySortString(array, name, ascdesc = 'desc') {
