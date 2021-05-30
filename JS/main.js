@@ -1337,7 +1337,7 @@ function chartInfoFillData() {
           <div class="col-4 breakword tableCenter studentName">${value.Name}</div>`
           if ($('.answerVisibility').css('text-shadow')!="none"){
 			var numBreaks = (value.Answer.match(/\n/g)||[]).length;
-			if(numBreaks == 0) {
+			if((value.Answer.length < 30) && numBreaks == 0) {
 				message += `
 				<div class="col-5 breakword tableCenter answerVisibility" style="color: transparent; text-shadow: 0 0 10px #000">${value.Answer}</div>`;
 			}
