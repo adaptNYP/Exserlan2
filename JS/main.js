@@ -449,12 +449,8 @@ const data = new (class {
   //Activate when change date
   setDate(date, lesson, group) {
     this.dayData = this.arrayToDate(this.sortedData, date);
-	//console.log(this.dayData)
     this.dayData = this.arrayByLesson(this.dayData, lesson);
-	//console.log(this.dayData)
     this.dayData = this.arrayByGroup(this.dayData, group);
-	//console.log(group);
-	//console.log(this.dayData)
    
     //If selected date doesn't have data, only applicable for today's date
     if (this.dayData.length == 0) {
@@ -1344,7 +1340,7 @@ function chartInfoFillData() {
 			else {
 				var truncatedText = value.Answer.substring(0,10).concat(' (').concat(value.Answer.replace(/\s/g, "").length).concat(')');
 				message += `
-				<div class="col-5 breakword tableCenter answerVisibility" onclick="displayFullText(this)" data-fullText="${value.Answer}" style="color: transparent; text-shadow: 0 0 10px #000">${truncatedText}</div>`;
+				<div class="col-5 breakword tableCenter answerVisibility" onclick="displayFullText(this)" data-fullText="${value.Answer.escapeSpecialChars()}" style="color: transparent; text-shadow: 0 0 10px #000">${truncatedText}</div>`;
 			}
           }
           else{
@@ -1615,9 +1611,19 @@ function tableResolve(event) {
   }
 }
 
+String.prototype.escapeSpecialChars = function() {
+    return this.replace(/"/g, "_7y9K6_")
+			   .replace(/'/g, "_7y9K9_");
+};
+
+String.prototype.unEscapeSpecialChars = function() {
+    return this.replace(/_7y9K6_/g, '\"')
+			   .replace(/_7y9K9_/g, "\'");
+};
+
 function displayFullText(evt) {
 	textAreaModal.style.display = 'block';
-	$('#myTextAreaModal').find('p').html($(evt).data().fulltext);
+	$('#myTextAreaModal').find('p').html($(evt).data().fulltext.unEscapeSpecialChars());
 }
 
 var clicks = 0;
