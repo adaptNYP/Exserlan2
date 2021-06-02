@@ -1623,7 +1623,6 @@ String.prototype.unEscapeSpecialChars = function() {
 
 function displayFullText(evt) {
 	textAreaModal.style.display = 'block';
-	console.log($(evt).data().fulltext.unEscapeSpecialChars());
 	$('#myTextAreaModal').find('p').html($(evt).data().fulltext.unEscapeSpecialChars());
 }
 
