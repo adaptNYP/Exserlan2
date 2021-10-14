@@ -124,6 +124,30 @@ function useMe(evt) {
   $('#surveyJSDBid').val((_dbid = $(evt).data().dbid));
   start();
 }
+
+function deleteMe(evt) {
+  var BreakException = {};
+  var toDel = $(evt).data().dbid;
+  const keys = JSON.parse(window.localStorage.getItem(LSK));
+  
+  if (keys) {
+	try{
+		keys.forEach(({ dbID, name }, i) => {
+			if(dbID == toDel) {
+				tempKeys = keys;
+				tempKeys.splice(i, 1);
+				window.localStorage.setItem(LSK, JSON.stringify(tempKeys));
+				loadIDHolder();
+				throw BreakException;
+			}
+		});
+	}
+	catch (e) {
+		if (e !== BreakException) throw e;
+	}
+  }
+}
+
 let _dbid;
 
 $('#clearID').click(() => {
@@ -220,11 +244,14 @@ function loadIDHolder() {
       appendingHTML += `
         <hr>
         <div class="row">
-            <div class="col-9">
+            <div class="col-10">
                 <p class="wordBreak">${name}</p>
             </div>
-            <div class="col-3 nopadding" style="display: flex">
+            <div class="col-1 nopadding" style="display: flex">
                 <button class="btn btn-success btn-sm useMe" onclick="useMe(this)"data-dbID="${dbID}" style="margin: auto;">Use</button>
+            </div>
+	    <div class="col-1 nopadding" style="display: flex">
+		<button class="btn btn-danger btn-sm useMe" onclick="deleteMe(this)"data-dbID="${dbID}" style="margin: auto;">Del</button>
             </div>
         </div>
     `;
