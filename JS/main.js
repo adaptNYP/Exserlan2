@@ -1726,7 +1726,7 @@ function exportToCSV() {
       Answer: value.Answer ? value.Answer : '',
       Code: value.Code ? value.Code : '',
       HappendAt: value.HappendAt,
-      resolved: value.resolved ? value.resolved : '',
+      //resolved: value.resolved ? value.resolved : '',
       Title: value.Title,
 	  Group: value.Group
     };
@@ -1737,7 +1737,7 @@ function exportToCSV() {
     Answer: 'Answer',
     Code: 'Code',
     HappendAt: 'HappendAt',
-    resolved: 'Resolved At',
+    //resolved: 'Resolved At',
     Title: 'Title',
 	Group: 'Group'
   };
